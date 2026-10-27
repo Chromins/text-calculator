@@ -21,6 +21,7 @@ from number_foramatter import number_format
 def test_valid_number(number, expected):
     assert number_format(number) == expected
 
+
 def test_invalid_type():
     with pytest.raises(ValueError):
         number_format("яблоко")
