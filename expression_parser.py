@@ -13,22 +13,31 @@ def parse_expression(expression):
     words = expression.split()
     tokens = []
     number_words = []
+    expect_number = True
     for word in words:
         if word not in OPERATORS:
             number_words.append(word)
         else:
             if number_words:
                 tokens.append(parse_number(' '.join(number_words)))
-                tokens.append(OPERATORS[word])
                 number_words = []
+                expect_number = False
+            if word == 'минус' and expect_number:
+                tokens.append('NEG')
             else:
-                raise ValueError('Неправильный порядок!')
-    if tokens or number_words:
+                if not expect_number:
+                    tokens.append(OPERATORS[word])
+                    expect_number = True
+                else:
+                    raise ValueError('Неправильный порядок!')
+    if number_words:
         tokens.append(parse_number(' '.join(number_words)))
-    else:
+        expect_number = False
+    if not tokens:
         raise ValueError('Пустой ввод!')
+    if expect_number:
+        raise ValueError('Незаконченное выражение!')
     return tokens
-
 
 
 
