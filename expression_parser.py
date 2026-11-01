@@ -35,7 +35,10 @@ def parse_expression(expression):
                 bracket_depth -= 1
                 expect_number = False
             else:
-                raise ValueError('Ошибка длины скобок!')
+                tokens.append('*')
+                tokens.append('(')
+                bracket_depth += 1
+                expect_number = True
         elif word in OPERATORS:
             finish_number()
             if word == 'минус' and expect_number:
@@ -50,7 +53,12 @@ def parse_expression(expression):
             if expect_number:
                 number_words.append(word)
             else:
-                raise ValueError('Неправильный порядок!')
+                if tokens[-1] == ')':
+                    tokens.append('*')
+                    number_words.append(word)
+                    expect_number = True
+                else:
+                    raise ValueError('Неправильный порядок!')
     finish_number()
     if not tokens:
         raise ValueError('Пустой ввод!')

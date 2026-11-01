@@ -40,10 +40,24 @@ def test_unary_minus(expression, expected):
         ("скобка пять плюс три скобка умножить два", 	['(', 5, '+', 3, ')', '*', 2]),
         ("скобка скобка пять плюс три скобка скобка", ['(', '(', 5, '+', 3, ')', ')']),
         ("скобка пять плюс скобка три умножить два скобка скобка", ['(', 5, '+', '(', 3, '*', 2, ')', ')']),
-        ("минус скобка пять плюс три скобка", ['NEG', '(', 5, '+', 3, ')'])
+        ("минус скобка пять плюс три скобка", ['NEG', '(', 5, '+', 3, ')']),
+        ("скобка пять скобка три", ['(', 5, ')', '*', 3])
     ]
 )
 def test_brackets_correct_expressions(expression, expected):
+    assert parse_expression(expression) == expected
+
+
+@pytest.mark.parametrize(
+    "expression, expected",
+    [
+        ("пять скобка три плюс два скобка", [5, '*', '(', 3, '+', 2, ')']),
+        ("скобка пять скобка три", ['(', 5, ')', '*', 3]),
+        ("скобка пять скобка двадцать три", ['(', 5, ')', '*', 23]),
+        ("скобка два плюс три скобка скобка четыре плюс один скобка", ['(', 2, '+', 3, ')', '*', '(', 4, '+', 1, ')'])
+    ]
+)
+def test_nested_implicit_multiplication(expression, expected):
     assert parse_expression(expression) == expected
 
 
@@ -52,8 +66,6 @@ def test_brackets_correct_expressions(expression, expected):
     [
         "скобка пять плюс три",
         "пять плюс три скобка",
-        "скобка пять плюс скобка",
-        "скобка пять скобка три",
         "скобка скобка"
     ]
 )
@@ -88,3 +100,11 @@ def test_undefined_words():
 
 def test_correct_negative_expressions():
     assert parse_expression("двадцать пять минус минус три") == [25, '-', 'NEG', 3]
+
+
+def test_implicit_multiplication():
+    assert parse_expression('пять скобка три плюс два скобка') == [5, '*', '(', 3, '+', 2, ')']
+
+
+def test_implicit_multiplication2():
+    assert parse_expression('скобка два плюс три скобка скобка четыре плюс один скобка') == ['(', 2, '+', 3, ')', '*', '(', 4, '+', 1, ')']
