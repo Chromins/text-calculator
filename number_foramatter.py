@@ -1,5 +1,7 @@
 #  Делает из слова числа
 
+#  Поддерживает вывод от -9999 до 9999
+
 
 UNITS = {
     0: 'ноль',
@@ -79,7 +81,7 @@ def number_format(number):
     divisor = 10 ** (len(str(number)) - 1)  # определитель разряда для последующего цикла
     if divisor > 1000:  # Пока ограничение от -9999 до 9999
         raise ValueError('Число длиннее ожидаемого!')
-    else:  # Основная вевть цикла
+    else:  # Основная ветвь цикла
         while number > 0:
             divisor = 10 ** (len(str(number)) - 1)
             digit = number // divisor
@@ -98,6 +100,8 @@ def number_format(number):
                 result.append(UNITS[number])
                 number = 0
             number %= divisor
+    if not -9999 <= number <= 9999:
+        raise ValueError('Результат выходит за допустимый диапазон!')
     return ' '.join(result)  # Вывод функции в формате строки
 
 

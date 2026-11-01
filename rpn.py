@@ -3,9 +3,11 @@ PRECEDENCE = {
     '+': 1,
     '-': 1,
     '*': 2,
-    '/': 2
+    '/': 2,
+    'NEG': 3
 }
 
+RIGHT_ASSOCIATIVE = {'NEG'}
 
 def to_rpn(tokens):
     operators = []
@@ -23,7 +25,11 @@ def to_rpn(tokens):
                 raise ValueError('Лишняя закрывающая скобка!')
             operators.pop()
         else:
-            while operators and operators[-1] != '(' and PRECEDENCE[token] <= PRECEDENCE[operators[-1]]:
+            while (operators  # Проверка приоритетов и распаковка стека в случае равенства левосторонних приоритетов
+                   and operators[-1] != '('
+                   and (PRECEDENCE[operators[-1]] > PRECEDENCE[token]
+                        or (PRECEDENCE[operators[-1]] == PRECEDENCE[token]
+                            and token not in RIGHT_ASSOCIATIVE))):
                 output.append(operators.pop())
             operators.append(token)
     while operators:

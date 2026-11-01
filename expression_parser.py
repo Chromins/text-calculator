@@ -14,14 +14,30 @@ def parse_expression(expression):
     tokens = []
     number_words = []
     expect_number = True
+    bracket_depth = 0
+
+    def finish_number():
+        nonlocal number_words, expect_number
+        if not number_words:
+            return
+        tokens.append(parse_number(' '.join(number_words)))
+        number_words = []
+        expect_number = False
+
     for word in words:
-        if word not in OPERATORS:
-            number_words.append(word)
-        else:
-            if number_words:
-                tokens.append(parse_number(' '.join(number_words)))
-                number_words = []
+        if word == 'скобка':
+            finish_number()
+            if expect_number:
+                tokens.append('(')
+                bracket_depth += 1
+            elif not expect_number and bracket_depth > 0:
+                tokens.append(')')
+                bracket_depth -= 1
                 expect_number = False
+            else:
+                raise ValueError('Ошибка длины скобок!')
+        elif word in OPERATORS:
+            finish_number()
             if word == 'минус' and expect_number:
                 tokens.append('NEG')
             else:
@@ -30,15 +46,19 @@ def parse_expression(expression):
                     expect_number = True
                 else:
                     raise ValueError('Неправильный порядок!')
-    if number_words:
-        tokens.append(parse_number(' '.join(number_words)))
-        expect_number = False
+        else:
+            if expect_number:
+                number_words.append(word)
+            else:
+                raise ValueError('Неправильный порядок!')
+    finish_number()
     if not tokens:
         raise ValueError('Пустой ввод!')
     if expect_number:
         raise ValueError('Незаконченное выражение!')
+    if bracket_depth > 0:
+        raise ValueError('Незаконченное подвыражение!')
     return tokens
-
 
 
 

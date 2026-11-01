@@ -1,4 +1,6 @@
-#  Делает слова в число
+# Делает слова в число
+
+# Поддерживает ввод от -99 до 99
 
 
 UNITS = {
@@ -58,7 +60,7 @@ def parse_number(text):
                 raise ValueError('Некорректный ввод!')
         elif len(words) == 2:
                 if words[0] not in TENS:  #  Проверка на разряды в двусложном вводе
-                    raise ValueError('Неверный ввод, ожидались десятки!')
+                    raise ValueError('Некорректный ввод!')
                 elif words[1] in UNITS and words[1] != 'ноль':
                     return TENS[words[0]] + UNITS[words[1]]
                 else:
